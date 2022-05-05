@@ -24,13 +24,16 @@
       "esri/widgets/ScaleBar",
       "esri/widgets/Legend",
 	  "esri/widgets/LayerList",
-	  "esri/widgets/Expand"
-    ], function(esriConfig, Map, MapView, FeatureLayer, ScaleBar, Legend, LayerList, Expand) {
+	  "esri/widgets/Expand",
+	  "esri/widgets/Popup"
+    ], function(esriConfig, Map, MapView, FeatureLayer, ScaleBar, Legend, LayerList, Expand, Popup) {
 	
 	  esriConfig.apiKey = "AAPK563647cc6d0d4359b524c8e78537e87fXNsVKRBVmxFq1CtsilGtSJsM5LmFLxB7SUqSwZOSS_eo175yS7MF3OcNqaLQm8Lt";
+
       const map = new Map({
-        basemap: "streets"
+        basemap: "gray"
       });
+
       const view = new MapView({
         container: "viewDiv",
         map: map,
@@ -38,11 +41,24 @@
         zoom: 7
       });
 	  
+	  const template = {
+        title: "<b>{Texto}</b>",
+        content: "Población con 65 o más años: {Porcentaje}%"
+		};
+
 	  const featureLayer = new FeatureLayer({
-		url: "https://services-eu1.arcgis.com/WCEIifo5j3luTcRc/arcgis/rest/services/env_bueno_WFL1/FeatureServer/0",
-		title: "Porcentaje de población mayor de 65 años por municipios"
+		url: "https://services-eu1.arcgis.com/WCEIifo5j3luTcRc/arcgis/rest/services/Informe_envejecimiento_WFL1/FeatureServer/1",
+		title: "Porcentaje de población mayor de 65 años por municipios",
+		popupTemplate: template
 	  });
 	  map.add(featureLayer);
+	  
+	  const provincias = new FeatureLayer({
+		url: "https://services-eu1.arcgis.com/WCEIifo5j3luTcRc/arcgis/rest/services/Informe_envejecimiento_WFL1/FeatureServer/0",
+		title: "Provincias",
+	  });
+	  map.add(provincias);
+	  
       const layerList = new LayerList({
 		view: view
       });
@@ -54,9 +70,11 @@
 	  view.ui.add(layerListExpand, "bottom-right");
        
       const scalebar = new ScaleBar({
-        view: view
+        view: view,
+		unit: "metric"
       });
       view.ui.add(scalebar, "bottom-left");
+
       const legend = new Legend ({
         view: view
       });
